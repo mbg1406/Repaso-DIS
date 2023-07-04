@@ -1,16 +1,18 @@
 package es.ufv.dis.final2022.back;
 
 import com.google.gson.Gson;
+import com.itextpdf.text.Document;
 import com.google.gson.reflect.TypeToken;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.vaadin.flow.component.html.Paragraph;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -22,6 +24,22 @@ import java.util.Map;
 public class Controller
 {
     private List<Medicamento> medicamento = new ArrayList<Medicamento>();
+
+    public void generarPDF(List<Medicamento> medicamentos){
+        try {
+            Document doc = new Document(PageSize.A4, 50, 50, 100, 72);
+            PdfWriter writer = PdfWriter.getInstance(doc, new FileOutputStream(System.getProperty("user.dir") + "/productos/backup.pdf"));//"../../../../../../../../../productos/backup.pdf"));
+            doc.open();
+            // Convertimos la lista en un String con formato JSON
+            String text = new Gson().toJson(medicamentos);
+            Paragraph p = new Paragraph(text);
+            doc.add((Element) p);
+            doc.close();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
 
     @GetMapping("/loadjson")
     public void loadjson(){
